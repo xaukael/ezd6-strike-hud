@@ -1,0 +1,18 @@
+
+{
+    "id": "ezd6-strike-hud",
+    "title": "EZD6 Strike Hud",
+    "description": "Show Strikes (heart icons) on tokens",
+    "authors": [{"name":"Xaukael"}],
+    "version": "1.0.0",
+    "system": ["ezd6"],
+    "compatibility": {
+        "minimum": "10",
+        "verified": "10"
+      },
+    "scripts": ["ezd6-strike-hud.js"],
+    "dependencies": [],
+    "url": "https://github.com/xaukael/ezd6-strike-hud/",
+    "manifest": "https://github.com/xaukael/ezd6-strike-hud/raw/main/module.json",
+    "download": "https://github.com/xaukael/ezd6-strike-hud/raw/main/ezd6-strike-hud.zip"
+}
