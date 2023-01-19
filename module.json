@@ -4,7 +4,7 @@
     "title": "EZD6 Strike Hud",
     "description": "Show Strikes (heart icons) on tokens",
     "authors": [{"name":"Xaukael"}],
-    "version": "1.0.1",
+    "version": "1.0.2",
     "system": ["ezd6"],
     "compatibility": {
         "minimum": "10",

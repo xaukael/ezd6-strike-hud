@@ -13,12 +13,12 @@ Hooks.on('updateStrikeHud', async (token, show)=>{
   if (!game.user.isGM)
     if (token.actor.type=='monster' && !game.settings.get("ezd6-strike-hud", "displayMonsterStrikesForPlayers")) return;
   $(`#strike-hud`).append($(`
-  <span id="strikes-${token.id}" style="position: absolute; transform: translate(-50%, 0%); white-space:nowrap;  font-size: ${game.settings.get("ezd6-strike-hud", "fontSize")}px;">${
+  <span id="strikes-${token.id}" style="text-align: center; position: absolute; transform: translate(-50%, 0%); white-space: wrap; width: ${2*token.w*token.document.texture.scaleX}px; font-size: ${game.settings.get("ezd6-strike-hud", "fontSize")}px;">${
     Array(token.actor.system.strikes.value)
-    .fill('<i class="fa-solid fa-heart" style="color: red; -webkit-text-stroke: 1px black;"></i>').join('&nbsp;') +
-    (token.actor.type=="character"? (token.actor.system.strikes.value<token.actor.system.strikes.max&&token.actor.system.strikes.value!=0?'&nbsp;':'') +
+    .fill('<i class="fa-solid fa-heart" style="color: red; -webkit-text-stroke: 1px black; margin: 0 .1em;"></i>').join('') +
+    (token.actor.type=="character"? (token.actor.system.strikes.value<token.actor.system.strikes.max&&token.actor.system.strikes.value!=0?'':'') +
     Array(Math.max(token.actor.system.strikes.max-token.actor.system.strikes.value, 0))
-    .fill('<i class="fa-solid fa-heart" style="color: black; -webkit-text-stroke: 1px red;"></i>').join('&nbsp;'):'')
+    .fill('<i class="fa-solid fa-heart" style="color: black; -webkit-text-stroke: 1px red; margin: 0 .1em;"></i>').join(''):'')
   }</span>`));
   // replace with settings
   let offsetY = game.settings.get("ezd6-strike-hud", "offsetY");
