@@ -2,7 +2,7 @@ Hooks.on('renderHeadsUpDisplay', (app, $hud, dimensions)=>{
   $hud.append($(`<div id="strike-hud" style="position: relative; pointer-events: none;
   height:${dimensions.height}px; width: ${dimensions.width}px; background-color: rgba(0, 255, 0, 0); left:0px; right: 0px;"></div>`))
   for (let token of canvas.tokens.objects.children) Hooks.call('updateStrikeHud', token, true);
-  if (!game.settings.get("strike-hud", "displayStrikes"))  $(`#strike-hud`).hide();
+  if (!game.settings.get("ezd6-strike-hud", "displayStrikes"))  $(`#strike-hud`).hide();
 })
 
 Hooks.on('updateStrikeHud', async (token, show)=>{
@@ -11,9 +11,9 @@ Hooks.on('updateStrikeHud', async (token, show)=>{
   if (!show) return;
   //while (token._animation) await new Promise((r) => setTimeout(r, 100));
   if (!game.user.isGM)
-    if (token.actor.type=='monster' && !game.settings.get("strike-hud", "displayMonsterStrikesForPlayers")) return;
+    if (token.actor.type=='monster' && !game.settings.get("ezd6-strike-hud", "displayMonsterStrikesForPlayers")) return;
   $(`#strike-hud`).append($(`
-  <span id="strikes-${token.id}" style="position: absolute; transform: translate(-50%, 0%); white-space:nowrap;  font-size: ${game.settings.get("strike-hud", "fontSize")}px;">${
+  <span id="strikes-${token.id}" style="position: absolute; transform: translate(-50%, 0%); white-space:nowrap;  font-size: ${game.settings.get("ezd6-strike-hud", "fontSize")}px;">${
     Array(token.actor.system.strikes.value)
     .fill('<i class="fa-solid fa-heart" style="color: red; -webkit-text-stroke: 1px black;"></i>').join('&nbsp;') +
     (token.actor.type=="character"? (token.actor.system.strikes.value<token.actor.system.strikes.max&&token.actor.system.strikes.value!=0?'&nbsp;':'') +
@@ -21,8 +21,8 @@ Hooks.on('updateStrikeHud', async (token, show)=>{
     .fill('<i class="fa-solid fa-heart" style="color: black; -webkit-text-stroke: 1px red;"></i>').join('&nbsp;'):'')
   }</span>`));
   // replace with settings
-  let offsetY = game.settings.get("strike-hud", "offsetY");
-  let top = game.settings.get("strike-hud", "strikesPosition") == 'top';
+  let offsetY = game.settings.get("ezd6-strike-hud", "offsetY");
+  let top = game.settings.get("ezd6-strike-hud", "strikesPosition") == 'top';
   if (top) $(`#strikes-${token.id}`).css({bottom:'unset', top: `${token.y+offsetY}px`, left: `${token.x+token.w/2}px`});
   else $(`#strikes-${token.id}`).css({top: `${token.y+token.h+offsetY}px`, left: `${token.x+token.w/2}px`});
 
@@ -34,8 +34,8 @@ Hooks.on('createToken', (token)=>{
 
 Hooks.on('refreshToken', (token)=>{
 	if (token.isPreview) return;
-  let offsetY = game.settings.get("strike-hud", "offsetY");
-  let top = game.settings.get("strike-hud", "strikesPosition") == 'top';
+  let offsetY = game.settings.get("ezd6-strike-hud", "offsetY");
+  let top = game.settings.get("ezd6-strike-hud", "strikesPosition") == 'top';
   if (top) $(`#strikes-${token.id}`).css({ top: `${token.y+offsetY}px`, left: `${token.x+token.w/2}px`});
   else $(`#strikes-${token.id}`).css({top: `${token.y+token.h+offsetY}px`, left: `${token.x+token.w/2}px`});
 });
@@ -51,9 +51,9 @@ Hooks.on('getSceneControlButtons', (controls)=>{
     icon: 'fas fa-heart',
     toggle: true,
     visible: true,
-    active: game.settings.get("strike-hud", "displayStrikes"),
+    active: game.settings.get("ezd6-strike-hud", "displayStrikes"),
     onClick: toggled => {
-      game.settings.set("strike-hud", "displayStrikes", toggled);
+      game.settings.set("ezd6-strike-hud", "displayStrikes", toggled);
       if (toggled) $(`#strike-hud`).show();
       else $(`#strike-hud`).hide();
     }
@@ -98,7 +98,7 @@ Hooks.on('renderTokenHUD', (app, html)=>{
 
 Hooks.once("init", async () => {
   
-  game.settings.register('strike-hud', 'displayStrikes', {
+  game.settings.register('ezd6-strike-hud', 'displayStrikes', {
     name: `Display Strikes`,
     hint: `Determines whether the strike HUD is visible`,
     scope: "client",
@@ -107,7 +107,7 @@ Hooks.once("init", async () => {
     default: false
   });
 
-  game.settings.register('strike-hud', 'strikesPosition', {
+  game.settings.register('ezd6-strike-hud', 'strikesPosition', {
     name: `Strikes Position`,
     hint: `Position strikes relative to the top or bottom of the token.`,
     scope: "world",
@@ -117,11 +117,11 @@ Hooks.once("init", async () => {
     config: true,
     onChange: value => { 
       for (let token of canvas.tokens.objects.children) Hooks.call('updateStrikeHud', token, true);
-      if (!game.settings.get("strike-hud", "displayStrikes"))  $(`#strike-hud`).hide();
+      if (!game.settings.get("ezd6-strike-hud", "displayStrikes"))  $(`#strike-hud`).hide();
     }
   });
 
-  game.settings.register('strike-hud', 'offsetY', {
+  game.settings.register('ezd6-strike-hud', 'offsetY', {
     name: `Y Offset`,
     hint: `Y offset for the hearts`,
     scope: "world",
@@ -130,11 +130,11 @@ Hooks.once("init", async () => {
     default: -30,
     onChange: value => { 
       for (let token of canvas.tokens.objects.children) Hooks.call('updateStrikeHud', token, true);
-      if (!game.settings.get("strike-hud", "displayStrikes"))  $(`#strike-hud`).hide();
+      if (!game.settings.get("ezd6-strike-hud", "displayStrikes"))  $(`#strike-hud`).hide();
     }
   });
 
-  game.settings.register('strike-hud', 'fontSize', {
+  game.settings.register('ezd6-strike-hud', 'fontSize', {
     name: `Font Size`,
     hint: `Font size in for the hearts in pixels`,
     scope: "world",
@@ -143,11 +143,11 @@ Hooks.once("init", async () => {
     default: 30,
     onChange: value => { 
       for (let token of canvas.tokens.objects.children) Hooks.call('updateStrikeHud', token, true);
-      if (!game.settings.get("strike-hud", "displayStrikes"))  $(`#strike-hud`).hide();
+      if (!game.settings.get("ezd6-strike-hud", "displayStrikes"))  $(`#strike-hud`).hide();
     }
   });
 
-  game.settings.register('strike-hud', 'displayMonsterStrikesForPlayers', {
+  game.settings.register('ezd6-strike-hud', 'displayMonsterStrikesForPlayers', {
     name: `Display Monster Strikes For Players`,
     hint: `Determines whether the strikes of monsters are visible to players`,
     scope: "world",
@@ -156,7 +156,7 @@ Hooks.once("init", async () => {
     default: false,
     onChange: value => { 
       for (let token of canvas.tokens.objects.children) Hooks.call('updateStrikeHud', token, true);
-      if (!game.settings.get("strike-hud", "displayStrikes"))  $(`#strike-hud`).hide();
+      if (!game.settings.get("ezd6-strike-hud", "displayStrikes"))  $(`#strike-hud`).hide();
     }
   });
 
