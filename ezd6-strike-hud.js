@@ -13,7 +13,7 @@ Hooks.on('updateStrikeHud', async (token, show)=>{
   if (!game.user.isGM)
     if (token.actor.type=='monster' && !game.settings.get("ezd6-strike-hud", "displayMonsterStrikesForPlayers")) return;
   $(`#strike-hud`).append($(`
-  <span id="strikes-${token.id}" style="text-align: center; position: absolute; transform: translate(-50%, 0%); white-space: wrap; width: ${2*token.w*token.document.texture.scaleX}px; font-size: ${game.settings.get("ezd6-strike-hud", "fontSize")}px;">${
+  <span id="strikes-${token.id}" style="text-align: center; position: absolute; transform: translate(-50%, 0%); white-space: wrap; width: ${2*token.w}px; font-size: ${game.settings.get("ezd6-strike-hud", "fontSize")}px;">${
     Array(token.actor.system.strikes.value)
     .fill('<i class="fa-solid fa-heart" style="color: red; -webkit-text-stroke: 1px black; margin: 0 .1em;"></i>').join('') +
     (token.actor.type=="character"? (token.actor.system.strikes.value<token.actor.system.strikes.max&&token.actor.system.strikes.value!=0?'':'') +
