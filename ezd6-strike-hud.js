@@ -9,9 +9,9 @@ Hooks.on('updateStrikeHud', async (token, show)=>{
   if (!token.actor) return;
   $(`#strikes-${token.id}`).remove();
   if (!show) return;
+  if (!token.visible) return;
   //while (token._animation) await new Promise((r) => setTimeout(r, 100));
-  if (!game.user.isGM)
-    if (token.actor.type=='monster' && !game.settings.get("ezd6-strike-hud", "displayMonsterStrikesForPlayers")) return;
+  if (!game.user.isGM && token.actor.type=='monster' && !game.settings.get("ezd6-strike-hud", "displayMonsterStrikesForPlayers")) return;
   $(`#strike-hud`).append($(`
   <span id="strikes-${token.id}" style="text-align: center; position: absolute; transform: translate(-50%, 0%); white-space: wrap; width: ${2*token.w}px; font-size: ${game.settings.get("ezd6-strike-hud", "fontSize")}px;">${
     Array(token.actor.system.strikes.value)
@@ -34,6 +34,9 @@ Hooks.on('createToken', (token)=>{
 
 Hooks.on('refreshToken', (token)=>{
 	if (token.isPreview) return;
+  for (let t of canvas.tokens.objects.children)
+    if (t.visible) $(`#strikes-${t.id}`).show();
+    else $(`#strikes-${t.id}`).hide();
   let offsetY = game.settings.get("ezd6-strike-hud", "offsetY");
   let top = game.settings.get("ezd6-strike-hud", "strikesPosition") == 'top';
   if (top) $(`#strikes-${token.id}`).css({ top: `${token.y+offsetY}px`, left: `${token.x+token.w/2}px`});
@@ -58,13 +61,13 @@ Hooks.on('getSceneControlButtons', (controls)=>{
       else $(`#strike-hud`).hide();
     }
   })
-})
+});
 
 Hooks.on('updateActor', (actor, update)=>{
   if (!foundry.utils.hasProperty(update, 'system.strikes')) return;
   for (let token of actor.getActiveTokens())
     Hooks.call('updateStrikeHud', token, true)
-})
+});
 
 Hooks.on('renderTokenHUD', (app, html)=>{
   let a = app.object.document.actor;
@@ -94,7 +97,7 @@ Hooks.on('renderTokenHUD', (app, html)=>{
     bar2input.val(+bar2input.val()-1);
     await a.update({[`system.${bar2attribute}`]: +bar2input.val()});
   }))
-})
+});
 
 Hooks.once("init", async () => {
   
@@ -104,7 +107,11 @@ Hooks.once("init", async () => {
     scope: "client",
     config: false,
     type: Boolean,
-    default: false
+    default: false,
+    onChange: value => { 
+      for (let token of canvas.tokens.objects.children) Hooks.call('updateStrikeHud', token, true);
+      if (!game.settings.get("ezd6-strike-hud", "displayStrikes"))  $(`#strike-hud`).hide();
+    }
   });
 
   game.settings.register('ezd6-strike-hud', 'strikesPosition', {
