@@ -1,15 +1,25 @@
 Hooks.on('renderHeadsUpDisplay', (app, $hud, dimensions)=>{
   $hud.append($(`<div id="strike-hud" style="position: relative; pointer-events: none;
   height:${dimensions.height}px; width: ${dimensions.width}px; background-color: rgba(0, 255, 0, 0); left:0px; right: 0px;"></div>`))
-  for (let token of canvas.tokens.objects.children) Hooks.call('updateStrikeHud', token, true);
-  if (!game.settings.get("ezd6-strike-hud", "displayStrikes"))  $(`#strike-hud`).hide();
+  
 })
 
+Hooks.on('initializeVisionSources', ()=>{
+  for (let token of canvas.tokens.objects?.children) Hooks.call('updateStrikeHud', token, true);
+  if (!game.settings.get("ezd6-strike-hud", "displayStrikes"))  $(`#strike-hud`).hide();
+  for (let t of canvas.tokens.objects.children)
+    if (t.visible) $(`#strikes-${t.id}`).show();
+    else $(`#strikes-${t.id}`).hide();
+});
+
 Hooks.on('updateStrikeHud', async (token, show)=>{
+  
   if (!token.actor) return;
   $(`#strikes-${token.id}`).remove();
   if (!show) return;
-  if (!token.visible) return;
+  
+  //console.log('updateStrikeHud',token,show,token.visible )
+  //if (!token.visible) return;
   //while (token._animation) await new Promise((r) => setTimeout(r, 100));
   if (!game.user.isGM && token.actor.type=='monster' && !game.settings.get("ezd6-strike-hud", "displayMonsterStrikesForPlayers")) return;
   $(`#strike-hud`).append($(`
@@ -25,7 +35,7 @@ Hooks.on('updateStrikeHud', async (token, show)=>{
   let top = game.settings.get("ezd6-strike-hud", "strikesPosition") == 'top';
   if (top) $(`#strikes-${token.id}`).css({bottom:'unset', top: `${token.y+offsetY}px`, left: `${token.x+token.w/2}px`});
   else $(`#strikes-${token.id}`).css({top: `${token.y+token.h+offsetY}px`, left: `${token.x+token.w/2}px`});
-
+  
 });
 
 Hooks.on('createToken', (token)=>{
